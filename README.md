@@ -1,11 +1,11 @@
 # monadness-js
 
-A functional-style Node.js library with improved error handling, flattened asyncronous handling and parallel processing.
+A TypeScript/JavaScript library that implements basic monad functionality. Currently, this young library only supports the following:
 
 - Either
 - Option
 
-This library
+This library is in active development.
 
 
 ## Install
@@ -26,6 +26,7 @@ This library
 Let's start with some sample TypeScript code:
 
 ```ts
+import { Either, Option } from "monadness";
 
 
 ```
@@ -33,6 +34,10 @@ Let's start with some sample TypeScript code:
 And, now, the same code in plain JavaScript:
 
 ```js
+var Monadness = require("monadness"),
+	Either = Monadness.Either,
+    Option = Monadness.Option;
+
 
 
 ```
