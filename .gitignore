@@ -1,0 +1,7 @@
+.DS_Store
+.vscode
+.idea
+coverage
+node_modules
+typings
+test/typings

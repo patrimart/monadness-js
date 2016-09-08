@@ -1,0 +1,43 @@
+{
+  "name": "monadness-js",
+  "version": "0.2.0",
+  "description": "Improved JavaScript error handling, asyncronous flow and parallel processing.",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "compile-lib": "rm -rf lib/* && tsc",
+    "webpack": "webpack",
+    "build-test": "rm -rf test/**/*.js && rm -rf test/typings && cd test && typings install && tsc",
+    "test": "node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "test-local": "node_modules/.bin/istanbul cover _mocha  -- -R spec"
+  },
+  "keywords": [
+    "catch",
+    "either",
+    "error",
+    "exception",
+    "functional",
+    "handling",
+    "monad",
+    "option",
+    "promise",
+    "try"
+  ],
+  "author": "Patrick Martin",
+  "license": "MIT",
+  "devDependencies": {
+    "coveralls": "^2.11.12",
+    "istanbul": "^0.4.5",
+    "mocha": "^2.5.3",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.2",
+    "webpack": "^1.13.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrimart/monadness-js"
+  },
+  "bugs": {
+    "url": "https://github.com/patrimart/monadness-js/issues"
+  }
+}
