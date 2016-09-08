@@ -10,21 +10,21 @@ describe('Option', function () {
         it('should return Option.Some("OK")', function () {
             var e = Option.some("OK");
             assert(e.isDefined());
-            assert(! e.isEmpty());
+            assert(!e.isEmpty());
             assert(e.get() === "OK");
         });
 
         it('should return Option.None()', function () {
             var e = Option.none();
             assert.throws(() => e.get());
-            assert(! e.isDefined());
+            assert(!e.isDefined());
             assert(e.isEmpty());
         });
 
         it('should return Option.nothing()', function () {
             var e = Option.nothing();
             assert.throws(() => e.get());
-            assert(! e.isDefined());
+            assert(!e.isDefined());
             assert(e.isEmpty());
         });
     });
@@ -34,19 +34,19 @@ describe('Option', function () {
         it('should test Some equality', function () {
             var e = Option.some("OK");
             assert(e.equals(Option.some("OK")), "Some == Some");
-            assert(! e.equals(Option.none()), "Some != None");
-            assert(! e.equals(Option.nothing()), "Some != Nothing");
-            assert(! e.equals(null), "Some != null");
-            assert(! e.equals(new String("OK")), "Some != String(OK)")
+            assert(!e.equals(Option.none()), "Some != None");
+            assert(!e.equals(Option.nothing()), "Some != Nothing");
+            assert(!e.equals(null), "Some != null");
+            assert(!e.equals("OK"), "Some != String(OK)")
         });
 
         it('should test None equality', function () {
             var e = Option.none();
             assert(e.equals(Option.none()), "None == None");
-            assert(! e.equals(Option.some("OK")), "None != Some");
+            assert(!e.equals(Option.some("OK")), "None != Some");
             assert(e.equals(Option.nothing()), "None == Nothing");
-            assert(! e.equals(null), "None != null");
-            assert(! e.equals(new String("OK")), "None != String(OK)")
+            assert(!e.equals(null), "None != null");
+            assert(!e.equals("OK"), "None != String(OK)")
         });
 
         it('should test Nothing equality', function () {
@@ -75,7 +75,7 @@ describe('Option', function () {
         it('should lift function', function () {
             var f = (a, b) => a[b];
             var lf = Option.lift(f);
-            assert(lf({b:"OK"}, "b").get() === "OK", "Return OK");
+            assert(lf({b: "OK"}, "b").get() === "OK", "Return OK");
             assert.doesNotThrow(() => lf(null, "b"), "Throws");
         });
     });
@@ -105,23 +105,43 @@ describe('Option', function () {
             var e = Option.some("OK");
             assert(e.toEither().get() === "OK");
             assert(e.toEither().isRight());
-            assert(! e.toEither().isLeft());
+            assert(!e.toEither().isLeft());
         });
 
         it('should None to Either.Left', function () {
             var e = Option.none();
             assert.throws(() => e.toEither().get());
             assert(e.toEither().isLeft());
-            assert(! e.toEither().isRight());
+            assert(!e.toEither().isRight());
         });
 
         it('should Nothing to Either.Nothing', function () {
             var e = Option.nothing();
             assert.throws(() => e.toOption().get());
-            assert(! e.toEither().isRight());
+            assert(!e.toEither().isRight());
             assert(e.toEither().isLeft());
-            assert(! e.toEither().equals(Either.nothing()));
-            assert(! e.toEither().equals(Either.nothing()));
+            assert(!e.toEither().equals(Either.nothing()));
+            assert(!e.toEither().equals(Either.nothing()));
         });
-    })
+    });
+
+    describe('finish coverage', function () {
+
+        it('Option.some should not throw errors', function () {
+            var o = Option.some("OK");
+            o.getOrElse("OK");
+            o.getOrElseGet("OK");
+            o.getOrThrow("OK");
+            o.orElse("OK");
+            o.toEither();
+        });
+
+        it('Option.none should not throw errors', function () {
+            var o = Option.none();
+            o.orElse(() => {});
+            o.toEither();
+            o.toString();
+        });
+
+    });
 });

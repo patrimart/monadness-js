@@ -39,7 +39,7 @@ describe('Either', function () {
             assert(! e.equals(Either.left("BAD")), "Right != Left");
             assert(! e.equals(Either.nothing()), "Right != Nothing");
             assert(! e.equals(null), "Right != null");
-            assert(! e.equals(new String("OK")), "Right != String(OK)")
+            assert(! e.equals("OK"), "Right != String(OK)")
         });
 
         it('should test Left equality', function () {
@@ -48,7 +48,7 @@ describe('Either', function () {
             assert(! e.equals(Either.right("OK")), "Left != Right");
             assert(! e.equals(Either.nothing()), "Left != Nothing");
             assert(! e.equals(null), "Left != null");
-            assert(! e.equals(new String("OK")), "Left != String(OK)")
+            assert(! e.equals("OK"), "Left != String(OK)")
         });
 
         it('should test Nothing equality', function () {
@@ -121,5 +121,36 @@ describe('Either', function () {
             assert(! e.toOption().isDefined());
             assert(e.toOption().equals(Option.nothing()));
         });
-    })
+    });
+
+    describe('finish coverage', function () {
+
+        it('Either.Left should not throw errors', function () {
+            var e = Either.left("BAD");
+            e.getLeft();
+            e.getRight();
+            e.orElse(() => {});
+            e.toOption();
+            e.toString();
+        });
+
+        it('Either.Right should not throw errors', function () {
+            var e = Either.right("GOOD");
+            e.getLeft();
+            e.getRight();
+            e.getOrElse();
+            e.getOrElseGet();
+            e.getOrThrow();
+            e.orElse();
+            e.toOption();
+            e.toString();
+        });
+
+        it('Either.nothing should not throw errors', function () {
+            var e = Either.nothing();
+            e.toOption();
+            e.toString();
+        });
+
+    });
 });

@@ -1,45 +1,135 @@
-monadnass-js
-========
+# monadness-js
+
 A functional-style Node.js library with improved error handling, flattened asyncronous handling and parallel processing.
 
-**This library is under development and very unstable. Do not use.**
+- Either
+- Option
 
-- Supports Node >= 4.3
-- Languages JavaScript and TypeScript
-- Does not support the browser
-
-This library is an attempt to bring pleasant error handling to JavaScript. The Domain module is deprecated without a replacement. Zone.js is promising, but feels incomplete. **try-func** catches all thrown Errors, all uncaught errors and all unhandled rejections by running functions in child processes.
-
-Ideally, this library will help prevent common bugs caused by thrown errors and undefined variables. By using Either and Option, method signatures can be more predictable.
+This library
 
 
-Install
--------
+## Install
+
 `npm install monadness`
 
 
-Quick Examples
---------------
-Let's start with some sample JS code:
+## Supports
 
-```javascript
-var Try = require('try-func').Try;
-Try.ofFork(() => {
-    var fs = require('fs');
-    return fs.readFileSync(__dirname + '/path/to/filename.txt', 'utf8');
-}).andThenFork(function* (fileContent) {
-    var asyncCountWords = require('../utils/asyncCountWords');
-    var wordCount = yield asyncCountWords(fileContent);
-    return wordCount;
-})
-.get().then(result => console.log(result.get()));
+- Node >= 4.0
+- All major browsers
+- TypeScript and JavaScript
+
+
+
+## Quick Examples
+
+Let's start with some sample TypeScript code:
+
+```ts
+
+
+```
+
+And, now, the same code in plain JavaScript:
+
+```js
+
+
+```
+
+## Either
+
+
+**TypeScript Declaration:**
+
+```ts
+export declare namespace Either {
+
+    function left<L, R>(left: L): Left<L, R>;
+    function right<L, R>(right: R): Right<L, R>;
+    function nothing(): Left<void, void>;
+    function lift<Error, T>(partialFunction: (...args: any[]) => T): (...args: any[]) => Either<Error, T>;
+
+    class Left<L, R> extends Either<L, R> {
+
+        isLeft(): boolean;
+        getLeft(): L;
+        getOrElse(f: () => R): R;
+        getOrElseGet(right: R): R;
+        getOrThrow(err?: Error): R;
+        orElse(f: () => Either<L, R>): Either<L, R>;
+        toOption(): Option<R>;
+        toObject(): {
+            left?: L;
+            right?: R;
+        };
+    }
+
+    class Right<L, R> extends Either<L, R> {
+
+        isRight(): boolean;
+        get(): R;
+        getRight(): R;
+        getOrElse(f: () => R): R;
+        getOrElseGet(right: R): R;
+        getOrThrow(): R;
+        orElse(f: () => Either<L, R>): Either<L, R>;
+        toOption(): Option<R>;
+        toObject(): {
+            left?: L;
+            right?: R;
+        };
+    }
+}
 
 ```
 
 
+## Option
 
-License
--------
+
+**TypeScript Definition**
+
+```ts
+export declare namespace Option {
+
+    function some<T>(value: T): Some<T>;
+    function none<T>(): None<T>;
+    function nothing(): None<void>;
+    function lift<T>(partialFunction: (...args: any[]) => T): (...args: any[]) => Option<T>;
+
+    class None<T> extends Option<T> {
+
+        isEmpty(): boolean;
+        getOrElse(f: () => T): T;
+        getOrElseGet(value: T): T;
+        getOrThrow(err?: Error): T;
+        orElse(f: () => Option<T>): Option<T>;
+        toEither(): Either.Left<Error, T>;
+        toObject(): {
+            some: T;
+        };
+    }
+
+    class Some<T> extends Option<T> {
+
+		isDefined(): boolean;
+        get(): T;
+        getOrElse(value: () => T): T;
+        getOrElseGet(value: T): T;
+        getOrThrow(err: Error): T;
+        orElse(o: () => Option<T>): Option<T>;
+        toEither(): Either.Right<Error, T>;
+        toObject(): {
+            some: T;
+        };
+    }
+}
+```
+
+
+# License
+
 (The MIT License)
 
 Copyright (c) 2016 Patrick Martin
