@@ -1,6 +1,12 @@
+
+[![Build Status](https://travis-ci.org/patrimart/monadness-js.svg?branch=master)](https://travis-ci.org/patrimart/monadness-js)
+[![Coverage Status](https://coveralls.io/repos/github/patrimart/monadness-js/badge.svg?branch=master)](https://coveralls.io/github/patrimart/monadness-js?branch=master)
+[![npm version](https://badge.fury.io/js/monadness.svg)](https://badge.fury.io/js/monadness)
+
 # monadness-js
 
-A TypeScript/JavaScript library that implements basic monad functionality. Currently, this young library only supports the following:
+
+A TypeScript/JavaScript library that implements basic monad functionality. Currently, this young library only offers the following:
 
 - Either
 - Option
@@ -11,6 +17,29 @@ This library is in active development.
 ## Install
 
 `npm install monadness`
+
+
+## Usage
+
+**TypeScript:**
+
+```ts
+import { Either, Option } from "monadness";
+```
+
+**NodeJS:**
+
+```js
+var Monadness = require("monadness"),
+	Either = Monadness.Either,
+    Option = Monadness.Option;
+```
+
+**Browser:**
+
+```html
+<script src="node_modules/dist/monadness.min.js"></script>
+```
 
 
 ## Supports
@@ -28,19 +57,26 @@ Let's start with some sample TypeScript code:
 ```ts
 import { Either, Option } from "monadness";
 
+function getFileContents (filePath: string): Either<Error, String> {
+
+    /* Code to read file */
+
+    if (contents === undefined) {
+        return Either.left(new Error(`File ${filePath} not found.`);
+    } else {
+        return Either.right(contents);
+    }
+}
+
+const contents = getFileContents ("path/to/filename.json");
+if (contents.isRight()) {
+    console.log("File contents:", contents.get());
+} else {
+    console.error(contents.getLeft());
+}
 
 ```
 
-And, now, the same code in plain JavaScript:
-
-```js
-var Monadness = require("monadness"),
-	Either = Monadness.Either,
-    Option = Monadness.Option;
-
-
-
-```
 
 ## Either
 
