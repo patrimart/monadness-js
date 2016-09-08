@@ -1,5 +1,5 @@
 {
-  "name": "monadness-js",
+  "name": "monadness",
   "version": "0.2.0",
   "description": "Improved JavaScript error handling, asyncronous flow and parallel processing.",
   "main": "lib/index.js",
