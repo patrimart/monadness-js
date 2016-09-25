@@ -2,6 +2,9 @@
     "compileOnSave": true,
     "compilerOptions": {
         "declaration": true,
+        "lib": [
+            "es2015"
+        ],
         "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": true,
@@ -12,7 +15,6 @@
         "target": "es5"
     },
     "files": [
-        "./typings/index.d.ts",
         "./src/index.ts"
     ]
 }
