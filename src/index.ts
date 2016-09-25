@@ -1,4 +1,6 @@
+import * as TuplesLib from "./tuples";
 
 export { Either } from "./either";
 export { Option } from "./option";
-export * from "./tuples";
+
+export const Tuples = TuplesLib;

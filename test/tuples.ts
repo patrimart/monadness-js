@@ -1,10 +1,10 @@
 
-import { Tuple2 } from "../lib";
+import { Tuples } from "../lib";
 
 
-const tuple = Tuple2.from("a", "b");
+const tuple = Tuples.Tuple2.from("a", "b");
 
-console.log("instanceof Tuple2", tuple instanceof Tuple2);
+console.log("instanceof Tuple2", tuple instanceof Tuples.Tuple2);
 console.log("typeof", tuple);
 
 console.log("Length", tuple.length);
