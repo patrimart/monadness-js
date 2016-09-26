@@ -4,7 +4,7 @@
  */
 function factory (...values: any[]): any {
 
-    const tuple = new (ClassMap[values.length] as any)(...values);
+    const tuple = new (ClassMap[values.length] as any)(values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8]);
 
     Object.defineProperty(tuple, "length", {
         writable: false,
@@ -63,9 +63,9 @@ function factory (...values: any[]): any {
  * Interface for Tuple extends Array<any>.
  */
 export interface ITuple extends Array<any> {
-    equals(o: ITuple): boolean;
+    equals (o: ITuple): boolean;
     toJSON (): any[];
-    toString(): string;
+    toString (): string;
 }
 
 

@@ -1,7 +1,7 @@
 {
   "name": "monadness",
-  "version": "0.2.0",
-  "description": "Improved JavaScript error handling, asyncronous flow and parallel processing.",
+  "version": "0.3.0",
+  "description": "TypeScript/JavaScript library of Option, Either and Tuples.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -12,16 +12,11 @@
     "test-local": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha  -- -R spec"
   },
   "keywords": [
-    "catch",
     "either",
-    "error",
-    "exception",
     "functional",
-    "handling",
     "monad",
     "option",
-    "promise",
-    "try"
+    "tuples"
   ],
   "author": "Patrick Martin",
   "license": "MIT",
