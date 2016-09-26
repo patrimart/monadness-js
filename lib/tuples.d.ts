@@ -7,6 +7,7 @@ export interface ITuple0 extends ITuple {
 }
 export declare class Tuple0 {
     static from(): ITuple0;
+    length: number;
 }
 export interface ITuple1<T1> extends ITuple {
     _1: T1;

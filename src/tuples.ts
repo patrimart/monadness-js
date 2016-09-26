@@ -4,8 +4,7 @@
  */
 function factory (...values: any[]): any {
 
-    const tuple: any = new (ClassMap[values.length].bind(null, ...values))();
-    tuple.__proto__.__proto__ = Object.create(new Array(...values));
+    const tuple = new (ClassMap[values.length] as any)(...values);
 
     Object.defineProperty(tuple, "length", {
         writable: false,
@@ -14,6 +13,7 @@ function factory (...values: any[]): any {
     });
 
     for (let i = 0, len = values.length; i < len; i++) {
+        tuple[i] = values[i];
         Object.defineProperty(tuple, `_${i + 1}`, {
             writable: false,
             enumerable: false,
@@ -23,11 +23,11 @@ function factory (...values: any[]): any {
 
     Object.defineProperty(tuple, "equals", {
         value: function (other: ITuple) {
-            if (! other || "_1" in other === false) return false;
             if (this === other) return true;
+            if (! other || "_1" in other === false) return false;
             if (this.length !== other.length) return false;
             for (let i = 0; i < this.length; i++) {
-                if ("equals" in other[i] && ! other[i].equals(this[i])) {
+                if (this[i].equals !== undefined && ! this[i].equals(other[i])) {
                     return false;
                 } else if (this[i] !== other[i]) {
                     return false;
@@ -78,8 +78,10 @@ export interface ITuple0 extends ITuple {}
 export class Tuple0 {
 
     static from (): ITuple0 {
-        return TUPLE_ZERO;
+        return TUPLE_ZERO_SINGLETON;
     }
+
+    public length = 0;
 }
 
 
@@ -231,7 +233,7 @@ export class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
     constructor (
         public _1: T1, public _2: T2, public _3: T3, public _4: T4, public _5: T5,
-        public _6: T6, public _7: T7, public _8: T8, public length = 5
+        public _6: T6, public _7: T7, public _8: T8, public length = 8
     ) {}
 }
 
@@ -252,13 +254,23 @@ export class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
     constructor (
         public _1: T1, public _2: T2, public _3: T3, public _4: T4, public _5: T5,
-        public _6: T6, public _7: T7, public _8: T8, public _9: T9, public length = 5
+        public _6: T6, public _7: T7, public _8: T8, public _9: T9, public length = 9
     ) {}
 }
 
 
 /**
- * Map of Tuple classes.
+ * Map of Tuple classes. Add Array methods.
  */
-const ClassMap: any = [ Tuple0, Tuple1, Tuple2, Tuple3, Tuple4, Tuple5, Tuple6, Tuple7, Tuple8, Tuple9 ];
-const TUPLE_ZERO = Tuple0.from();
+const ClassMap: any = [ Tuple0, Tuple1, Tuple2, Tuple3, Tuple4, Tuple5, Tuple6, Tuple7, Tuple8, Tuple9 ]
+    .map(c => {
+        Object.getOwnPropertyNames(Array.prototype)
+            .filter  (p => p !== "length")
+            .forEach (p => Object.defineProperty(c.prototype, p, { value: (Array.prototype as any)[p] }));
+        return c;
+    });
+
+/**
+ * Tuple0 Singleton.
+ */
+const TUPLE_ZERO_SINGLETON = factory();
