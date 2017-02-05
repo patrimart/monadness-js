@@ -5,7 +5,7 @@ export declare abstract class Option<T> {
     abstract getOrThrow(err: Error): T;
     abstract orElse(o: () => Option<T>): Option<T>;
     abstract toObject(): {
-        some: T;
+        some: T | null;
     };
     isDefined(): boolean;
     isEmpty(): boolean;
@@ -13,7 +13,7 @@ export declare abstract class Option<T> {
     toEither(): Either<Error, T>;
     equals(other: Option<T>): boolean;
     toJSON(): {
-        some: T;
+        some: T | null;
     };
     toString(): string;
 }
@@ -31,7 +31,7 @@ export declare namespace Option {
         orElse(f: () => Option<T>): Option<T>;
         toEither(): Either.Left<Error, T>;
         toObject(): {
-            some: T;
+            some: null;
         };
     }
     class Some<T> extends Option<T> {

@@ -1,4 +1,5 @@
-import * as TuplesLib from "./tuples";
-export { Either } from "./either";
-export { Option } from "./option";
-export declare const Tuples: typeof TuplesLib;
+export * from "./interfaces";
+export * from "./either";
+export * from "./maybe";
+export * from "./option";
+export * from "./tuples";

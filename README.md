@@ -5,101 +5,311 @@
 
 # monadness-js
 
+A TypeScript/JavaScript library that implements some basic "objects" of functional programming.
 
-A TypeScript/JavaScript library that implements basic monad functionality. Currently, this young library only offers the following:
+- [Either](#either)
+- [Maybe](#maybe)
+- [Tuples](#tuples)
+- Option (deprecated for Maybe)
 
-- Either
-- Option
-- Tuples (with arity 0-9)
+The advantages of using these classes:
 
-This library is in active development.
+- Code that's easier to reason about.
+- Better error handling.
+- Avoid `null` and `undefined` issues.
 
 
 ## Install
 
-`npm install monadness`
-
-
-## Usage
-
-**TypeScript:**
-
-```ts
-import { Either, Option, Tuples } from "monadness";
-```
-
-**NodeJS:**
-
-```js
-var Monadness = require("monadness"),
-	Either = Monadness.Either,
-    Option = Monadness.Option,
-    Tuples = Monadness.Tuples;
-```
-
-**Browser:**
-
-```html
-<script src="node_modules/dist/monadness.min.js"></script>
-```
-
-
-## Supports
-
-- Node >= 4.0
-- All major browsers
-- TypeScript and JavaScript
-
+`npm i -S monadness`
 
 
 ## Quick Examples
 
-Let's start with some sample TypeScript code:
+Example code for `Maybe`:
 
-```ts
-import { Either, Option } from "monadness";
+```js
+import { Maybe } from "monadness";
 
-function getFileContents (filePath: string): Either<Error, String> {
+function getFileContents (filePath: string): Maybe<string> {
+    /* Code to sync read file */
+    return Maybe.fromNull(contents);
+}
 
-    /* Code to read file */
+const contents = getFileContents("path/to/filename.json");
+
+if (contents.isDefined()) {
+    console.log("File contents:", contents.get());
+} else {
+    console.error("File error: File not loaded.");
+}
+
+console.log("File contents:", contents.getOrElseGet(""));
+```
+
+Example code for `Either`:
+
+```js
+import { Either } from "monadness";
+
+function getFileContents (filePath: string): Either<Error, string> {
+
+    /* Code to sync read file */
 
     if (contents === undefined) {
-        return Either.left(new Error(`File ${filePath} not found.`);
+        return Either.left<Error, string>(new Error(`File ${filePath} not found.`);
     } else {
-        return Either.right(contents);
+        return Either.right<Error, string>(contents);
     }
 }
 
-const contents = getFileContents ("path/to/filename.json");
+const contents = getFileContents("path/to/filename.json");
+
 if (contents.isRight()) {
     console.log("File contents:", contents.get());
 } else {
-    console.error(contents.getLeft());
+    console.error("File error:", contents.getLeft());
 }
+
+contents.cata(
+    content => console.log("File contents:", content),
+    err => console.error("File error:", err),
+);
+```
+
+Example code for `Tuples`:
+
+```js
+import { Tuples } from "monadness";
+
+const tuple = Tuples.from(1, "two", true);
+
+const [a, b, c] = tuple;
+console.log(a, b, c);
+// 1, "two", true
+
+const newTuple1 = tuple.map(a => a + a);
+console.log(newTuple1._1, newTuple1._2, newTuple1._3);
+// 2, "twotwo", 2
+
+const newTuple2 = tuple.mbind(Tuples.from(
+    a => Tuples.from(a + a),
+    b => Tuples.from(b + "three"),
+    c => Tuples.from(!! c),
+));
+console.log(newTuple2._1, newTuple2._2, newTuple2._3);
+// 2, "twothree", false
 ```
 
 
-## Either
+## Usage
+
+**TypeScript / ES6**
+
+```js
+import { Either, Maybe, Tuples } from "monadness";
+```
+
+**NodeJS**
+
+```js
+const Monadness = require("monadness"),
+      Either = Monadness.Either,
+      Maybe = Monadness.Maybe,
+      Tuples = Monadness.Tuples;
+```
+
+**Browser**
+
+```html
+<script src="node_modules/dist/monadness.min.js"></script>
+<script src="node_modules/dist/monadness.es6.min.js"></script>
+```
+
+---
+
+# Maybe
+
+
+## Static Methods
+
+### Maybe.just
+
+```js
+Maybe.just <T> (value: T): Maybe<T>
+```
+
+### Maybe.none
+
+```js
+Maybe.none <T> (): Maybe<T>
+```
+
+### Maybe.nothing
+
+```js
+Maybe.nothing (): Maybe<void>
+```
+
+### Maybe.fromNull
+
+```js
+Maybe.fromNull <T> (value: T): Maybe<T>
+```
+
+### Maybe.sequence
+
+```js
+Maybe.sequence <T> (...maybes: Array<Maybe<T>>): Maybe<T[]>
+```
+
+### Maybe.traverse
+
+```js
+Maybe.traverse <T, U> (f: (a: T) => Maybe<U>): (as: T[]) => Maybe<U[]>
+```
+
+### Maybe.lift
+
+```js
+Maybe.lift <T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Maybe<T>
+```
+
+## Instance Methods
+
+### map
+
+```js
+maybe.map <U> (f: (a: T) => U): Maybe<U>
+```
+
+### fmap
+
+```js
+maybe.fmap <U> (f: (a: T) => Maybe<U>): Maybe<U>
+```
+
+### applies
+
+```js
+maybe.applies <U, V> (f: (a: T) => (b: U) => Maybe<V>): (mb: Maybe<U>) => Maybe<V>
+```
+
+### mbind
+
+```js
+maybe.mbind <U> (f: Maybe<(a: T) => Maybe<U>>): Maybe<U>
+```
+
+### flatten
+
+```js
+flatten (): Maybe<T>
+```
+
+### isEmpty
+
+```js
+maybe.isEmpty (): boolean
+```
+
+### isDefined
+
+```js
+maybe.isDefined (): boolean
+```
+
+### get
+
+```js
+maybe.get (): T
+```
+
+### getOrElse
+
+```js
+maybe.getOrElse (value: () => T): T
+```
+
+### getOrElseGet
+
+```js
+maybe.getOrElseGet (value: T): T
+```
+
+### getOrThrow
+
+```js
+maybe.getOrThrow (err: Error): T
+```
+
+### orElse
+
+```js
+maybe.orElse (o: () => Maybe<T>): Maybe<T>
+```
+
+### toEither
+
+```js
+maybe.toEither (): Either.Right<Error, T>
+```
+
+### toObject
+
+```js
+maybe.toObject (): { just: T; }
+```
+
+### toJSON
+
+```js
+maybe.toJSON (): { just: T | null }
+```
+
+### toString
+
+```js
+maybe.toString (): string
+```
+
+### equals
+
+```js
+maybe.equals (other: Maybe<T>): boolean
+```
+
+---
+
+# Either
 
 **TypeScript Declaration:**
 
-```ts
-export declare namespace Either {
+```typescript
+namespace Either {
 
-    function left<L, R> (left: L): Left<L, R>;
-    function right<L, R> (right: R): Right<L, R>;
+    function left <L, R> (left: L): Left<L, R>;
+    function right <L, R> (right: R): Right<L, R>;
     function nothing (): Left<void, void>;
-    function lift<Error, T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Either<Error, T>;
+    function sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]>;
+    function traverse <L, R, S> (f: (a: R) => Either<L, S>): (as: R[]) => Either<L, S[]>;
+    function lift <Error, T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Either<Error, T>;
 
     class Left<L, R> extends Either<L, R> {
-
+        map <S> (f: (a: R) => S): Left<L, S>;
+        fmap <S> (f: (a: R) => Either<L, S>): Left<L, S>;
+        applies <S, T> (f: (a: R) => (b: S) => Left<L, T>): (mb: Either<L, S>) => Left<L, T>;
+        mbind <S> (f: Either<L, (a: R) => Either<L, S>>): Left<L, S>;
+        bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Left<M, S>;
+        cata <V> (lf: (l: L) => V, rf: (r: R) => V): V;
+        flatten (): Left<L, R>;
         isLeft (): boolean;
+        get (): never;
         getLeft (): L;
         getOrElse (f: () => R): R;
         getOrElseGet (right: R): R;
         getOrThrow (err?: Error): R;
         orElse (f: () => Either<L, R>): Either<L, R>;
-        toOption (): Option<R>;
         toObject (): {
             left?: L;
             right?: R;
@@ -107,7 +317,13 @@ export declare namespace Either {
     }
 
     class Right<L, R> extends Either<L, R> {
-
+        map <S> (f: (a: R) => S): Right<L, S>;
+        fmap <S> (f: FunctorFunc<R, S>): Either<L, S>;
+        applies <S, T> (f: ApplicativeFunc<R, S, T>): (eb: Either<L, S>) => Either<L, T>;
+        mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S>;
+        bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Right<M, S>;
+        cata <V> (lf: (l: L) => V, rf: (r: R) => V): V;
+        flatten <M, S> (): Either<M, S>;
         isRight (): boolean;
         get (): R;
         getRight (): R;
@@ -115,6 +331,7 @@ export declare namespace Either {
         getOrElseGet (right: R): R;
         getOrThrow (): R;
         orElse (f: () => Either<L, R>): Either<L, R>;
+        toMaybe (): Maybe<R>;
         toOption (): Option<R>;
         toObject (): {
             left?: L;
@@ -122,154 +339,80 @@ export declare namespace Either {
         };
     }
 }
-
 ```
 
-
-## Option
-
-**TypeScript Definition**
-
-```ts
-export declare namespace Option {
-
-    function some<T> (value: T): Some<T>;
-    function none<T> (): None<T>;
-    function nothing (): None<void>;
-    function lift<T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Option<T>;
-
-    class None<T> extends Option<T> {
-
-        isEmpty (): boolean;
-        getOrElse (f: () => T): T;
-        getOrElseGet (value: T): T;
-        getOrThrow (err?: Error): T;
-        orElse (f: () => Option<T>): Option<T>;
-        toEither (): Either.Left<Error, T>;
-        toObject (): {
-            some: T;
-        };
-    }
-
-    class Some<T> extends Option<T> {
-
-		isDefined (): boolean;
-        get (): T;
-        getOrElse (value: () => T): T;
-        getOrElseGet (value: T): T;
-        getOrThrow (err: Error): T;
-        orElse (o: () => Option<T>): Option<T>;
-        toEither (): Either.Right<Error, T>;
-        toObject (): {
-            some: T;
-        };
-    }
-}
-```
-
+---
 
 ## Tuples
 
-#### Tuple0.from (): ITuple;
-
-#### Tuple1.from<T1> (_1: T1): ITuple1<T1>
-
-#### TupleN.from (_1: T1 [, ..._n: Tn]): ITuple1<T1 [, ...Tn]>
-
 **Example of Static Initializers and Usage:**
-```ts
+
+```js
 import { Tuples } from "monadness";
 
-const tuple0 = Tuples.Tuple0.from();
-const tuple1 = Tuples.Tuple1.from("a");
-const tuple2 = Tuples.Tuple2.from("a", 2");
-const tuple3 = Tuples.Tuple3.from(123, "abc", true);
-const tuple4 = Tuples.Tuple4.from(1, 2, 3, 4);
-const tuple5 = Tuples.Tuple5.from(1, 2, 3, 4, 5);
-const tuple6 = Tuples.Tuple6.from(1, 2, 3, 4, 5, 6);
-const tuple7 = Tuples.Tuple7.from(1, 2, 3, 4, 5, 6, 7);
-const tuple8 = Tuples.Tuple8.from(1, 2, 3, 4, 5, 6, 7, 8);
-const tuple9 = Tuples.Tuple9.from(1, 2, 3, 4, 5, 6, 7, 8, 9);
+const tuple0 = Tuples.from();
+const tuple1 = Tuples.from("a");
+const tuple2 = Tuples.from("a", 2);
+const tuple3 = Tuples.from(123, "abc", true);
+const tuple4 = Tuples.from(1, 2, 3, 4);
+const tuple5 = Tuples.from(1, 2, 3, 4, 5);
+const tuple6 = Tuples.from(1, 2, 3, 4, 5, 6);
+const tuple7 = Tuples.from(1, 2, 3, 4, 5, 6, 7);
+const tuple8 = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8);
+const tuple9 = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
 console.log("First value:", tuple2._1, tuple[0]);
 console.log("Second value:", tuple2._2, tuple[1]);
 
 const [x, y] = tuple2; // Desctructuring
 
-for (let val in tuple4) {
-    console.log("Tuple4 values:", val);
+for (const i in tuple4) {
+    console.log("Tuple4 values:", tuple4[i]);
 }
 
-for (let val of tuple5) {
+for (const val of tuple5) {
     console.log("Tuple5 values:", val);
 }
 ```
 
+
 **TypeScript Declarations:**
-```ts
-export interface ITuple extends Array<any> {
-    equals (o: ITuple): boolean;
-    toJSON (): any[];
-    toString (): string;
-}
 
-export interface ITuple0 extends ITuple {}
-
-export interface ITuple1<T1> extends ITuple {
+```js
+interface TupleN <T1, ...Tn> extends Tuple {
     _1: T1;
+    _n: Tn;
+
+    map <U1, ...Un> (f: (a: T1 | ...Tn) => U1 | ...Un): Tuple9<U1, ...Un>;
+    fmap <U1, ...U9> (f: (a: T1 | ...Tn) => Tuple1<U1 | ...Un>): Tuple9<U1, ...Un>;
+    applies <U1, U2, ...Un, V1, ...Vn> (f: ApplicativeFunc<T1 | ...Tn, U1 | ...Un, V1 | ...Vn>): (mb: Tuple9<U1, ...Un>) => Tuple9<V1, ...Vn>;
+    mbind <U1, ...Un> (f: TupleN<TMF<T1, U1>, ...TMF<Tn, Un>>): Tuple9<U1, ...Un>;
 }
 
-export interface ITuple2<T1, T2> extends ITuple {
-    _1: T1; _2: T2;
-}
-
-export interface ITuple3<T1, T2, T3> extends ITuple {
-    _1: T1; _2: T2; _3: T3;
-}
-
-export interface ITuple4<T1, T2, T3, T4> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4;
-}
-
-export interface ITuple5<T1, T2, T3, T4, T5> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4; _5: T5;
-}
-
-export interface ITuple6<T1, T2, T3, T4, T5, T6> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4; _5: T5; _6: T6;
-}
-
-export interface ITuple7<T1, T2, T3, T4, T5, T6, T7> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4; _5: T5; _6: T6; _7: T7;
-}
-
-export interface ITuple8<T1, T2, T3, T4, T5, T6, T7, T8> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4, _5: T5; _6: T6; _7: T7; _8: T8;
-}
-
-export interface ITuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> extends ITuple {
-    _1: T1; _2: T2; _3: T3; _4: T4, _5: T5; _6: T6; _7: T7; _8: T8; _9: T9;
+class Tuples {
+    static from <T1, ...Tn> (_1: T1, ..._n: Tn): Tuplen <T1, ...Tn> & [T1, ...Tn];
 }
 ```
 
+---
 
 # License
 
 (The MIT License)
 
-Copyright (c) 2016 Patrick Martin
+Copyright (c) 2017 Patrick Martin
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
-associated documentation files (the 'Software'), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the 'Software'), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN 
-NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -1,11 +1,23 @@
 
-import {Option} from "./option";
+import { Monad, FunctorFunc, ApplicativeFunc, MonadFunc } from "./interfaces";
+import { Maybe }  from "./maybe";
+import { Option } from "./option";
 
 /**
  * The Either<L, R> abstract class.
  */
-export abstract class Either <L, R> {
+export abstract class Either <L, R> implements Monad<R> {
 
+    abstract map <S> (f: (a: R) => S): Either<L, S>;
+    abstract fmap <S> (f: FunctorFunc<R, S>): Either<L, S>;
+    abstract applies <S, T> (f: ApplicativeFunc<R, S, T>): (mb: Either<L, S>) => Either<L, T>;
+    abstract mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S>;
+
+    abstract bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Either<M, S>;
+    abstract cata <V> (lf: (l: L) => V, rf: (r: R) => V): V;
+    abstract flatten <M, S> (): Either <M, S>;
+
+    abstract get (): R | never;
     abstract getOrElse (f: () => R): R;
     abstract getOrElseGet (right: R): R;
     abstract getOrThrow (err?: Error): R;
@@ -25,27 +37,30 @@ export abstract class Either <L, R> {
     public isRight (): boolean { return false; }
 
     /**
-     * Throws a ReferenceError.
-     */
-    public get (): R {
-        throw new ReferenceError("This either is Left.")
-    }
-
-    /**
      * Returns an undefined Left value.
      * @returns {L}
      */
-    public getLeft (): L { return undefined; }
+    public getLeft (): L { throw new ReferenceError("This either is Right."); }
 
     /**
      * Returns an undefined Right value.
      * @returns {R}
      */
-    public getRight (): R { return undefined; }
+    public getRight (): R { throw new ReferenceError("This either is Left."); }
+
+    /**
+     * Returns an Maybe.None<R>.
+     * @returns {Maybe<R>}
+     * @since 0.5.0
+     */
+    public toMaybe (): Maybe<R> {
+        return Maybe.none<R>();
+    }
 
     /**
      * Returns an Option.None<R>.
      * @returns {Option<R>}
+     * @deprecated
      */
     public toOption (): Option<R> {
         return Option.none<R>();
@@ -57,8 +72,8 @@ export abstract class Either <L, R> {
      * @returns {boolean}
      */
     public equals (other: Either<L, R>): boolean {
-        if (! other || other instanceof Either === false) return false;
         if (this === other) return true;
+        if (! other || other instanceof Either === false) return false;
         if (this.isRight() !== other.isRight()) return false;
         if (this.isRight() && this.getRight() === other.getRight()) return true;
         if (this.getLeft() && this.getLeft() === other.getLeft()) return true;
@@ -112,6 +127,44 @@ export namespace Either {
     }
 
     /**
+     * Iterates over an Array of Either values. If any Either.Left, the iteration
+     * stops and a Maybe.Left is returned.
+     * @since 0.5.0
+     */
+    export function sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]> {
+        
+        const arr = [] as R[];
+        for (const i in eithers) {
+            if (eithers[i].isLeft()) {
+                return new Left<L, R[]>(eithers[i].getLeft() as L);
+            }
+            arr[i] = eithers[i].get();
+        }
+        return new Right<L, R[]>(arr);
+    }
+
+    /**
+     * Maps over an Array with the given function. If the function ever returns
+     * an Either.Left, the iteration stops and a Either.Left is returned.
+     * @since 0.5.0
+     */
+    export function traverse <L, R, S> (f: (a: R) => Either<L, S>): (as: R[]) => Either<L, S[]> {
+
+        return function (as: R[]): Either<L, S[]> {
+
+            const arr = [] as S[];
+            for (const i in as) {
+                const r = f(as[i]);
+                if (r.isLeft()) {
+                    return new Left<L, S[]>(r.getLeft() as L);
+                }
+                arr[i] = r.get();
+            }
+            return new Right<L, S[]>(arr);
+        }
+    }
+
+    /**
      * Lifts the given partialFunction into a total function that returns an Either result.
      * Basically, wraps the function in try/catch and return Either.Right() or Either.Left().
      * @param {(...args: any[]) => T} partialFunction - the function to lift
@@ -138,11 +191,76 @@ export namespace Either {
         }
 
         /**
+         * 
+         * @since 0.5.0
+         */
+        public map <S> (f: (a: R) => S): Left<L, S> {
+            return new Left<L, S>(this.left);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public fmap <S> (f: (a: R) => Either<L, S>): Left<L, S> {
+            return new Left<L, S>(this.left);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public applies <S, T> (f: (a: R) => (b: S) => Left<L, T>): (mb: Either<L, S>) => Left<L, T> {
+            return function (mb: Either<L, S>): Left<L, T> {
+                return new Left<L, T>(this.left);
+            }
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public mbind <S> (f: Either<L, (a: R) => Either<L, S>>): Left<L, S> {
+            return new Left<L, S>(this.left);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Left<M, S> {
+            return new Left<M, S>(lf(this.left));
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public cata <V> (lf: (l: L) => V, rf: (r: R) => V): V {
+            return lf(this.left);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public flatten (): Left<L, R> {
+            return this;
+        }
+
+        /**
          * Returns that this is a Left.
          * @returns {boolean}
          */
         public isLeft (): boolean {
             return true;
+        }
+
+        /**
+         * Throws a ReferenceError.
+         */
+        public get (): never {
+            throw new ReferenceError("This either is Left.");
         }
 
         /**
@@ -190,14 +308,6 @@ export namespace Either {
         }
 
         /**
-         * Returns an Option.None<R>.
-         * returns {Option<R>}
-         */
-        public toOption (): Option<R> {
-            return Option.none<R>();
-        }
-
-        /**
          * Returs the Either as a plain-old JS object.
          * @returns {{left: L}}
          */
@@ -213,6 +323,68 @@ export namespace Either {
 
         constructor (private right: R) {
             super();
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public map <S> (f: (a: R) => S): Right<L, S> {
+            return new Right<L, S>(f(this.right));
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public fmap <S> (f: FunctorFunc<R, S>): Either<L, S> {
+            return f(this.right) as any;
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public applies <S, T> (f: ApplicativeFunc<R, S, T>): (eb: Either<L, S>) => Either<L, T> {
+            return eb => eb.fmap(f(this.right));
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S> {
+            return this.applies(a => (b: FunctorFunc<R, S>) => b(a))(f);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Right<M, S> {
+            return new Right<M, S>(rf(this.right));
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public cata <V> (lf: (l: L) => V, rf: (r: R) => V): V {
+            return rf(this.right);
+        }
+
+        /**
+         * 
+         * @since 0.5.0
+         */
+        public flatten <M, S> (): Either<M, S> {
+
+            const val = this.get();
+            if (val instanceof Either) {
+                return val.flatten() as any;
+            } else {
+                return this as any;
+            }
         }
 
         /**
@@ -275,8 +447,18 @@ export namespace Either {
         }
 
         /**
+         * Returns an Maybe.Just<R>.
+         * @returns {Maybe<R>}
+         * @since 0.5.0
+         */
+        public toMaybe (): Maybe<R> {
+            return Maybe.just<R>(this.right);
+        }
+
+        /**
          * Returns an Option.Some<R>.
          * @returns {Option<R>}
+         * @deprecated
          */
         public toOption (): Option<R> {
             return Option.some<R>(this.right);
@@ -290,6 +472,6 @@ export namespace Either {
             return { right: this.right };
         }
     }
-
-    const nothingEither = new Left<void, void>(void(0));
 }
+
+const nothingEither = new Either.Left<void, void>(void(0));

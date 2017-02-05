@@ -1,8 +1,9 @@
 
-import {Either} from "./either";
+import { Either } from "./either";
 
 /**
  * The Option<T> abstract class.
+ * @deprecated
  */
 export abstract class Option <T> {
 
@@ -10,7 +11,7 @@ export abstract class Option <T> {
     abstract getOrElseGet (value: T): T;
     abstract getOrThrow (err: Error): T;
     abstract orElse (o: () => Option<T>): Option<T>;
-    abstract toObject (): {some: T};
+    abstract toObject (): {some: T | null};
 
     /**
      * Returns that this is None.
@@ -57,9 +58,9 @@ export abstract class Option <T> {
 
     /**
      * Returns the Option as a JSON object.
-     * @returns {string} '{"some": T | null}'
+     * @returns {{some: T | null}}
      */
-    public toJSON (): {some: T} {
+    public toJSON (): {some: T | null} {
         return this.toObject();
     }
 
@@ -74,6 +75,7 @@ export abstract class Option <T> {
 
 /**
  * The Option namespace.
+ * @deprecated
  */
 export namespace Option {
 
@@ -120,6 +122,7 @@ export namespace Option {
 
     /**
      * The Option.None<T> class.
+     * @deprecated
      */
     export class None<T> extends Option<T> {
 
@@ -182,13 +185,14 @@ export namespace Option {
          * Returns the Option as a plain-old JS object.
          * @returns {{some: null}}
          */
-        public toObject (): {some: T} {
+        public toObject (): {some: null} {
             return { some: null };
         }
     }
 
     /**
      * The Option.Some<T> class.
+     * @deprecated
      */
     export class Some<T> extends Option<T> {
 
