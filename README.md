@@ -133,6 +133,10 @@ const Monadness = require("monadness"),
 
 The Maybe class can be an instance with a defined value (Maybe.Just) or no value (Maybe.None).
 
+This is a better alternative to throwing errors or returning `undefined` values.
+It lets the type-checker discover errors at compile time.
+
+
 ## Static Methods
 
 ### Maybe.just
@@ -194,11 +198,15 @@ Maybe.lift <T> (partialFunction: (...args: any[]) => T): (...args: any[]) => May
 
 ### isEmpty
 
+Returns true if this is a Maybe.None.
+
 ```js
 isEmpty (): boolean
 ```
 
 ### isDefined
+
+Returns true if this is a Maybe.Right.
 
 ```js
 isDefined (): boolean
@@ -206,11 +214,15 @@ isDefined (): boolean
 
 ### get
 
+Returns the Just value or throws an error if None.
+
 ```js
 get (): T | never
 ```
 
 ### getOrElse
+
+Returns the Just value or the result of the given function. 
 
 ```js
 getOrElse (value: () => T): T
@@ -218,17 +230,23 @@ getOrElse (value: () => T): T
 
 ### getOrElseGet
 
+Returns the Just value or the given value.
+
 ```js
 getOrElseGet (value: T): T
 ```
 
 ### getOrThrow
 
+Returns the Just value or throws the given error.
+
 ```js
-getOrThrow (err: Error): T | never
+getOrThrow (err?: Error): T | never
 ```
 
 ### orElse
+
+Returns the Just value or the function result.
 
 ```js
 orElse (o: () => Maybe<T>): Maybe<T>
@@ -236,11 +254,15 @@ orElse (o: () => Maybe<T>): Maybe<T>
 
 ### map
 
+Applies the Maybe function to the value and return the result wrapped in a Maybe.
+
 ```js
 map <U> (f: (a: T) => U): Maybe<U>
 ```
 
 ### fmap
+
+Applies the function to the value and return the result.
 
 ```js
 fmap <U> (f: (a: T) => Maybe<U>): Maybe<U>
@@ -254,17 +276,23 @@ applies <U, V> (f: (a: T) => (b: U) => Maybe<V>): (mb: Maybe<U>) => Maybe<V>
 
 ### mbind
 
+Applies the Maybe function to the value and return the result.
+
 ```js
 mbind <U> (f: Maybe<(a: T) => Maybe<U>>): Maybe<U>
 ```
 
 ### flatten
 
+Converts a Maybe of nested Maybes to a one-depth Maybe.
+
 ```js
-flatten (): Maybe<T>
+flatten <U> (): Maybe<U>
 ```
 
 ### toEither
+
+Converts the Maybe to an Either.
 
 ```js
 toEither (): Either.Right<Error, T>
@@ -272,11 +300,15 @@ toEither (): Either.Right<Error, T>
 
 ### toObject
 
+Returns an object or null.
+
 ```js
-toObject (): { just: T; }
+toObject (): { just: T | null; }
 ```
 
 ### toJSON
+
+Returns an object or null.
 
 ```js
 toJSON (): { just: T | null }
@@ -284,11 +316,15 @@ toJSON (): { just: T | null }
 
 ### toString
 
+Returns a string representation of the Maybe: '{ "just": T }'
+
 ```js
 toString (): string
 ```
 
 ### equals
+
+Tests the equality of two Maybes.
 
 ```js
 equals (other: Maybe<T>): boolean
@@ -298,9 +334,18 @@ equals (other: Maybe<T>): boolean
 
 # Either
 
+An Either can hold one of two values, a Left or Right value. Conventionly, a success is a right value and
+an error is a left value. (Right is right and left is wrong.)
+
+This is a better alternative to throwing errors or returning `undefined` values.
+It lets the type-checker discover errors at compile time.
+
+
 ### Static Methods
 
 ### right
+
+Returns an Either.Right with the given value.
 
 ```js
 Either.right <L, R> (right: R)
@@ -308,11 +353,15 @@ Either.right <L, R> (right: R)
 
 ### left
 
+Returns an Either.Left with the given value.
+
 ```js
 Either.left <L, R> (left: L)
 ```
 
 ### nothing
+
+Returns the Either.nothing singleton.
 
 ```js
 Either.nothing (): Left<void, void>
@@ -320,11 +369,15 @@ Either.nothing (): Left<void, void>
 
 ### sequence
 
+Converts an array of Eithers into an Either of an array.
+
 ```js
 Either.sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]>
 ```
 
 ### traverse
+
+Maps an array into an Either of an array.
 
 ```js
 Either.traverse <L, R, S> (f: (a: R) => Either<L, S>): (as: R[]) => Either<L, S[]>
@@ -341,11 +394,15 @@ Either.lift <Error, T> (partialFunction: (...args: any[]) => T): (...args: any[]
 
 ### isLeft
 
+Returns true if this is an Either.Left.
+
 ```js
 isLeft (): boolean
 ```
 
 ### isRight
+
+Returns true if this is an Either.Right.
 
 ```js
 isRight (): boolean
@@ -353,11 +410,15 @@ isRight (): boolean
 
 ### get
 
+Returns the right value, or throws an error if Either.Left.
+
 ```js
 get (): R | never;
 ```
 
 ## getRight
+
+Returns the right value, or throws an error if Either.Left.
 
 ```js
 getRight (): R | never
@@ -365,11 +426,15 @@ getRight (): R | never
 
 ## getLeft
 
+Returns the left value, or throws an error if Either.Right.
+
 ```js
 getLeft (): L | never
 ```
 
 ### getOrElse
+
+Returns the right value or the result of the given function.
 
 ```js
 getOrElse (f: () => R): R
@@ -377,11 +442,15 @@ getOrElse (f: () => R): R
 
 ### getOrElseGet
 
+Returns the right value or the given value.
+
 ```js
 getOrElseGet (right: R): R
 ```
 
 ### getOrThrow
+
+Returns the right value or throws the given error.
 
 ```js
 getOrThrow (err?: Error): R | never
@@ -389,11 +458,15 @@ getOrThrow (err?: Error): R | never
 
 ### orElse
 
+Returns the right value or the result of the given function.
+
 ```js
 orElse (f: () => Either<L, R>)
 ```
 
 ### map
+
+Applies the function to the value and wraps the result in another Either.
 
 ```js
 map <S> (f: (a: R) => S): Either<L, S>
@@ -401,8 +474,10 @@ map <S> (f: (a: R) => S): Either<L, S>
 
 ### fmap
 
+Applies the function to the value and returns the result.
+
 ```js
-fmap <S> (f: FunctorFunc<R, S>): Either<L, S>
+fmap <S> (f: (a: R) => Either<L, S>): Either<L, S>
 ```
 
 ### applies
@@ -413,11 +488,15 @@ applies <S, T> (f: ApplicativeFunc<R, S, T>): (mb: Either<L, S>) => Either<L, T>
 
 ###mbind
 
+Basically maps the right value to the Either.Right function.
+
 ```js
-mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S>
+mbind <S> (f: Either<L, (f: R) => Either<L, S>>): Either<L, S>
 ```
 
 ### bimap
+
+Applies the applicable function to the value and produces an Either.
 
 ```js
 bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Either<M, S>
@@ -425,11 +504,15 @@ bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Either<M, S>
 
 ### cata
 
+Applies the applicable function to the Either and produces a value.
+
 ```js
 cata <V> (lf: (l: L) => V, rf: (r: R) => V): V
 ```
 
 ### flatten
+
+Flattens an Either of nested Eithers to a one depth Either.
 
 ```js
 flatten <M, S> (): Either <M, S>
@@ -437,17 +520,23 @@ flatten <M, S> (): Either <M, S>
 
 ### toMaybe
 
+Converts this Either to a Maybe.
+
 ```js
 toMaybe (): Maybe<R>
 ```
 
 ### toObject
 
+Converts the instance to a basic object.
+
 ```js
 toObject (): { left?: L; right?: R }
 ```
 
 ### toJSON
+
+Allows the instance to be converted to JSON.
 
 ```js
 toJSON (): { left?: L; right?: R }
@@ -462,6 +551,8 @@ toString (): string
 ```
 
 ### equals
+
+Tests the equality of the Eithers.
 
 ```js
 equals (other: Either<L, R>): boolean
@@ -485,6 +576,8 @@ Tuples.from <T1, ...Tn> (_1: T1, ..._n: Tn): TupleN <T1, ...Tn> & [T1, ...Tn]
 
 ### Instance Getters
 
+Accesses the values of the tuple (not zero-based).
+
 ```js
 _1: T1;
 _n: Tn;
@@ -497,11 +590,15 @@ In addition to all of the regular array methods, the Tuple class has the followi
 
 ### map
 
+Applies the function to each value of the tuple.
+
 ```js
 map <U1, ...Un> (f: (a: T1 | ...Tn) => U1 | ...Un): Tuple9<U1, ...Un>
 ```
 
 ### fmap
+
+Applies the function to each value of the tuple.
 
 ```js
 fmap <U1, ...U9> (f: (a: T1 | ...Tn) => Tuple1<U1 | ...Un>): Tuple9<U1, ...Un>
@@ -515,17 +612,23 @@ applies <U1, U2, ...Un, V1, ...Vn> (f: ApplicativeFunc<T1 | ...Tn, U1 | ...Un, V
 
 ### mbind
 
+Applies each function to each value respectively.
+
 ```js
 mbind <U1, ...Un> (f: TupleN<TMF<T1, U1>, ...TMF<Tn, Un>>): TupleN<U1, ...Un>
 ```
 
 ### toJSON
 
+Converts the tuple to a JSON object.
+
 ```js
 toJSON (): { just: T | null }
 ```
 
 ### equals
+
+Tests the equality of two tuples.
 
 ```js
 equals (other: TupleN<T>): boolean

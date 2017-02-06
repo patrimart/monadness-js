@@ -19,10 +19,10 @@
     "maybe",
     "tuple",
     "functional",
+    "functional programming",
     "functor",
     "applicative",
-    "monad",
-    "option"
+    "monad"
   ],
   "author": "Patrick Martin",
   "license": "MIT",
