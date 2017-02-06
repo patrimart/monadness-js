@@ -1,13 +1,13 @@
 
 import * as assert from "assert";
-import { Tuple, Tuples } from '../lib/';
+import { Tuple, Tuples } from "../lib/";
 
 
 describe ("Tuples", function () {
 
     describe ("Tuple0", function () {
         it ("should instantiate Tuple0 to length 0", function () {
-            var tuple = Tuples.from();
+            let tuple = Tuples.from();
             assert.ok(tuple);
             assert.equal(tuple.length, 0);
         });
@@ -15,7 +15,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple1", function () {
         it ("should instantiate Tuple1 to length 1", function () {
-            var tuple = Tuples.from(1);
+            let tuple = Tuples.from(1);
             assert.ok(tuple);
             assert.equal(tuple.length, 1);
             assert.equal(tuple._1, 1);
@@ -24,7 +24,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple2", function () {
 
-        var tuple = Tuples.from(123, "abc");
+        let tuple = Tuples.from(123, "abc");
 
         it ("should have basic properties", function () {
             assert.equal(tuple.length, 2);
@@ -35,13 +35,13 @@ describe ("Tuples", function () {
         });
 
         it ("should iterate with for...in", function () {
-            var vals = [];
-            for (var i in tuple) vals.push(tuple[i]);
+            let vals = [];
+            for (let i in tuple) vals.push(tuple[i]);
             assert.deepEqual(vals, [123, "abc"]);
         });
 
-        it ('should deconstruct', function () {
-            var [a, b] = tuple;
+        it ("should deconstruct", function () {
+            let [a, b] = tuple;
             assert(a === tuple._1 && b === tuple._2);
         });
 
@@ -54,7 +54,7 @@ describe ("Tuples", function () {
         });
 
         it ("should equal other resolve", function () {
-            var other = Tuples.from(123, "abc");
+            let other = Tuples.from(123, "abc");
             assert.equal(tuple.equals(other), true);
             assert.equal(tuple.equals(null as any), false);
             assert.equal(tuple.equals(tuple), true);
@@ -66,7 +66,7 @@ describe ("Tuples", function () {
     describe ("Tuple3", function () {
 
         it ("should instantiate Tuple3 to length 3", function () {
-            var tuple = Tuples.from(1, 2, 3);
+            let tuple = Tuples.from(1, 2, 3);
             assert.ok(tuple);
             assert.equal(tuple.length, 3);
             assert.equal(tuple._1, 1);
@@ -74,37 +74,37 @@ describe ("Tuples", function () {
             assert.equal(tuple._3, 3);
         });
 
-        it ('should map', function () {
+        it ("should map", function () {
 
-            var tuple = Tuples.from(1, 2, 3);
-            var tt = tuple.map<number, number, number>(a => a * a);
+            let tuple = Tuples.from(1, 2, 3);
+            let tt = tuple.map<number, number, number>(a => a * a);
             assert(tt._1 === 1);
             assert(tt._2 === 4);
             assert(tt._3 === 9);
         });
 
-        it ('should fmap', function () {
+        it ("should fmap", function () {
 
-            var tuple = Tuples.from(1, 2, 3);
-            var tt = tuple.fmap<number, number, number>(a => Tuples.from(a * a));
+            let tuple = Tuples.from(1, 2, 3);
+            let tt = tuple.fmap<number, number, number>(a => Tuples.from(a * a));
             assert(tt._1 === 1);
             assert(tt._2 === 4);
             assert(tt._3 === 9);
         });
 
-        it ('should applies', function () {
+        it ("should applies", function () {
 
-            var tuple = Tuples.from(1, 2, 3);
-            var tt = tuple.applies<number, number, number, number, number, number>(a => b => Tuples.from(a + b))(Tuples.from(4, 5, 6));
+            let tuple = Tuples.from(1, 2, 3);
+            let tt = tuple.applies<number, number, number, number, number, number>(a => b => Tuples.from(a + b))(Tuples.from(4, 5, 6));
             assert(tt._1 === 5);
             assert(tt._2 === 7);
             assert(tt._3 === 9);
         });
 
-        it ('should mbind', function () {
+        it ("should mbind", function () {
 
-            var tuple = Tuples.from(1, 2, 3);
-            var tt = tuple.mbind(Tuples.from(
+            let tuple = Tuples.from(1, 2, 3);
+            let tt = tuple.mbind(Tuples.from(
                 (a: number) => Tuples.from(a + 4),
                 (a: number) => Tuples.from(a + 5),
                 (a: number) => Tuples.from(a + 6),
@@ -117,7 +117,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple4", function () {
         it ("should instantiate Tuple4 to length 4", function () {
-            var tuple = Tuples.from(1, 2, 3, 4);
+            let tuple = Tuples.from(1, 2, 3, 4);
             assert.ok(tuple);
             assert.equal(tuple.length, 4);
             assert.equal(tuple._1, 1);
@@ -129,7 +129,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple5", function () {
         it ("should instantiate Tuple5 to length 5", function () {
-            var tuple = Tuples.from(1, 2, 3, 4, 5);
+            let tuple = Tuples.from(1, 2, 3, 4, 5);
             assert.ok(tuple);
             assert.equal(tuple.length, 5);
             assert.equal(tuple._1, 1);
@@ -142,7 +142,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple6", function () {
         it ("should instantiate Tuple6 to length 6", function () {
-            var tuple = Tuples.from(1, 2, 3, 4, 5, 6);
+            let tuple = Tuples.from(1, 2, 3, 4, 5, 6);
             assert.ok(tuple);
             assert.equal(tuple.length, 6);
             assert.equal(tuple._1, 1);
@@ -156,7 +156,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple7", function () {
         it ("should instantiate Tuple7 to length 7", function () {
-            var tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7);
+            let tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7);
             assert.ok(tuple);
             assert.equal(tuple.length, 7);
             assert.equal(tuple._1, 1);
@@ -171,7 +171,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple8", function () {
         it ("should instantiate Tuple8 to length 8", function () {
-            var tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8);
+            let tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8);
             assert.ok(tuple);
             assert.equal(tuple.length, 8);
             assert.equal(tuple._1, 1);
@@ -187,7 +187,7 @@ describe ("Tuples", function () {
 
     describe ("Tuple9", function () {
         it ("should instantiate Tuple3 to length 9", function () {
-            var tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            let tuple = Tuples.from(1, 2, 3, 4, 5, 6, 7, 8, 9);
             assert.ok(tuple);
             assert.equal(tuple.length, 9);
             assert.equal(tuple._1, 1);

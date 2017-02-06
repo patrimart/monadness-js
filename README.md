@@ -126,14 +126,18 @@ const Monadness = require("monadness"),
 <script src="node_modules/dist/monadness.es6.min.js"></script>
 ```
 
+
 ---
 
 # Maybe
 
+The Maybe class can be an instance with a defined value (Maybe.Just) or no value (Maybe.None).
 
 ## Static Methods
 
 ### Maybe.just
+
+Creates a Maybe.Just with the given value.
 
 ```js
 Maybe.just <T> (value: T): Maybe<T>
@@ -141,11 +145,15 @@ Maybe.just <T> (value: T): Maybe<T>
 
 ### Maybe.none
 
+Creates a Maybe.None.
+
 ```js
 Maybe.none <T> (): Maybe<T>
 ```
 
 ### Maybe.nothing
+
+Returns the Maybe.nothing singleton.
 
 ```js
 Maybe.nothing (): Maybe<void>
@@ -153,17 +161,23 @@ Maybe.nothing (): Maybe<void>
 
 ### Maybe.fromNull
 
+Creates a Maybe.Just with the given value or, if the value is `null` or `undefined`, a Maybe.None.
+
 ```js
 Maybe.fromNull <T> (value: T): Maybe<T>
 ```
 
 ### Maybe.sequence
 
+Turns an array of Maybes into a Maybe of arrays.
+
 ```js
 Maybe.sequence <T> (...maybes: Array<Maybe<T>>): Maybe<T[]>
 ```
 
 ### Maybe.traverse
+
+Maps an array into a Maybe of arrays.
 
 ```js
 Maybe.traverse <T, U> (f: (a: T) => Maybe<U>): (as: T[]) => Maybe<U[]>
@@ -175,30 +189,73 @@ Maybe.traverse <T, U> (f: (a: T) => Maybe<U>): (as: T[]) => Maybe<U[]>
 Maybe.lift <T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Maybe<T>
 ```
 
+
 ## Instance Methods
+
+### isEmpty
+
+```js
+isEmpty (): boolean
+```
+
+### isDefined
+
+```js
+isDefined (): boolean
+```
+
+### get
+
+```js
+get (): T | never
+```
+
+### getOrElse
+
+```js
+getOrElse (value: () => T): T
+```
+
+### getOrElseGet
+
+```js
+getOrElseGet (value: T): T
+```
+
+### getOrThrow
+
+```js
+getOrThrow (err: Error): T | never
+```
+
+### orElse
+
+```js
+orElse (o: () => Maybe<T>): Maybe<T>
+```
 
 ### map
 
 ```js
-maybe.map <U> (f: (a: T) => U): Maybe<U>
+map <U> (f: (a: T) => U): Maybe<U>
 ```
 
 ### fmap
 
 ```js
-maybe.fmap <U> (f: (a: T) => Maybe<U>): Maybe<U>
+fmap <U> (f: (a: T) => Maybe<U>): Maybe<U>
 ```
 
 ### applies
 
 ```js
-maybe.applies <U, V> (f: (a: T) => (b: U) => Maybe<V>): (mb: Maybe<U>) => Maybe<V>
+applies <U, V> (f: (a: T) => (b: U) => Maybe<V>): (mb: Maybe<U>) => Maybe<V>
 ```
 
 ### mbind
 
 ```js
-maybe.mbind <U> (f: Maybe<(a: T) => Maybe<U>>): Maybe<U>
+mbind <U> (f: Maybe<(a: T) => Maybe<U>>): Maybe<U>
 ```
 
 ### flatten
@@ -207,143 +264,273 @@ maybe.mbind <U> (f: Maybe<(a: T) => Maybe<U>>): Maybe<U>
 flatten (): Maybe<T>
 ```
 
-### isEmpty
-
-```js
-maybe.isEmpty (): boolean
-```
-
-### isDefined
-
-```js
-maybe.isDefined (): boolean
-```
-
-### get
-
-```js
-maybe.get (): T
-```
-
-### getOrElse
-
-```js
-maybe.getOrElse (value: () => T): T
-```
-
-### getOrElseGet
-
-```js
-maybe.getOrElseGet (value: T): T
-```
-
-### getOrThrow
-
-```js
-maybe.getOrThrow (err: Error): T
-```
-
-### orElse
-
-```js
-maybe.orElse (o: () => Maybe<T>): Maybe<T>
-```
-
 ### toEither
 
 ```js
-maybe.toEither (): Either.Right<Error, T>
+toEither (): Either.Right<Error, T>
 ```
 
 ### toObject
 
 ```js
-maybe.toObject (): { just: T; }
+toObject (): { just: T; }
 ```
 
 ### toJSON
 
 ```js
-maybe.toJSON (): { just: T | null }
+toJSON (): { just: T | null }
 ```
 
 ### toString
 
 ```js
-maybe.toString (): string
+toString (): string
 ```
 
 ### equals
 
 ```js
-maybe.equals (other: Maybe<T>): boolean
+equals (other: Maybe<T>): boolean
 ```
 
 ---
 
 # Either
 
-**TypeScript Declaration:**
+### Static Methods
 
-```typescript
-namespace Either {
+### right
 
-    function left <L, R> (left: L): Left<L, R>;
-    function right <L, R> (right: R): Right<L, R>;
-    function nothing (): Left<void, void>;
-    function sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]>;
-    function traverse <L, R, S> (f: (a: R) => Either<L, S>): (as: R[]) => Either<L, S[]>;
-    function lift <Error, T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Either<Error, T>;
-
-    class Left<L, R> extends Either<L, R> {
-        map <S> (f: (a: R) => S): Left<L, S>;
-        fmap <S> (f: (a: R) => Either<L, S>): Left<L, S>;
-        applies <S, T> (f: (a: R) => (b: S) => Left<L, T>): (mb: Either<L, S>) => Left<L, T>;
-        mbind <S> (f: Either<L, (a: R) => Either<L, S>>): Left<L, S>;
-        bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Left<M, S>;
-        cata <V> (lf: (l: L) => V, rf: (r: R) => V): V;
-        flatten (): Left<L, R>;
-        isLeft (): boolean;
-        get (): never;
-        getLeft (): L;
-        getOrElse (f: () => R): R;
-        getOrElseGet (right: R): R;
-        getOrThrow (err?: Error): R;
-        orElse (f: () => Either<L, R>): Either<L, R>;
-        toObject (): {
-            left?: L;
-            right?: R;
-        };
-    }
-
-    class Right<L, R> extends Either<L, R> {
-        map <S> (f: (a: R) => S): Right<L, S>;
-        fmap <S> (f: FunctorFunc<R, S>): Either<L, S>;
-        applies <S, T> (f: ApplicativeFunc<R, S, T>): (eb: Either<L, S>) => Either<L, T>;
-        mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S>;
-        bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Right<M, S>;
-        cata <V> (lf: (l: L) => V, rf: (r: R) => V): V;
-        flatten <M, S> (): Either<M, S>;
-        isRight (): boolean;
-        get (): R;
-        getRight (): R;
-        getOrElse (f: () => R): R;
-        getOrElseGet (right: R): R;
-        getOrThrow (): R;
-        orElse (f: () => Either<L, R>): Either<L, R>;
-        toMaybe (): Maybe<R>;
-        toOption (): Option<R>;
-        toObject (): {
-            left?: L;
-            right?: R;
-        };
-    }
-}
+```js
+Either.right <L, R> (right: R)
 ```
+
+### left
+
+```js
+Either.left <L, R> (left: L)
+```
+
+### nothing
+
+```js
+Either.nothing (): Left<void, void>
+```
+
+### sequence
+
+```js
+Either.sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]>
+```
+
+### traverse
+
+```js
+Either.traverse <L, R, S> (f: (a: R) => Either<L, S>): (as: R[]) => Either<L, S[]>
+```
+
+### lift
+
+```js
+Either.lift <Error, T> (partialFunction: (...args: any[]) => T): (...args: any[]) => Either<Error, T>
+```
+
+
+### Instance Methods
+
+### isLeft
+
+```js
+isLeft (): boolean
+```
+
+### isRight
+
+```js
+isRight (): boolean
+```
+
+### get
+
+```js
+get (): R | never;
+```
+
+## getRight
+
+```js
+getRight (): R | never
+```
+
+## getLeft
+
+```js
+getLeft (): L | never
+```
+
+### getOrElse
+
+```js
+getOrElse (f: () => R): R
+```
+
+### getOrElseGet
+
+```js
+getOrElseGet (right: R): R
+```
+
+### getOrThrow
+
+```js
+getOrThrow (err?: Error): R | never
+```
+
+### orElse
+
+```js
+orElse (f: () => Either<L, R>)
+```
+
+### map
+
+```js
+map <S> (f: (a: R) => S): Either<L, S>
+```
+
+### fmap
+
+```js
+fmap <S> (f: FunctorFunc<R, S>): Either<L, S>
+```
+
+### applies
+
+```js
+applies <S, T> (f: ApplicativeFunc<R, S, T>): (mb: Either<L, S>) => Either<L, T>
+```
+
+###mbind
+
+```js
+mbind <S> (f: Either<L, FunctorFunc<R, S>>): Either<L, S>
+```
+
+### bimap
+
+```js
+bimap <M, S> (lf: (l: L) => M, rf: (r: R) => S): Either<M, S>
+```
+
+### cata
+
+```js
+cata <V> (lf: (l: L) => V, rf: (r: R) => V): V
+```
+
+### flatten
+
+```js
+flatten <M, S> (): Either <M, S>
+```
+
+### toMaybe
+
+```js
+toMaybe (): Maybe<R>
+```
+
+### toObject
+
+```js
+toObject (): { left?: L; right?: R }
+```
+
+### toJSON
+
+```js
+toJSON (): { left?: L; right?: R }
+```
+
+### toString
+
+Returns the Either as a string: '{"right": R}' or '{"left": L}'
+
+```js
+toString (): string
+```
+
+### equals
+
+```js
+equals (other: Either<L, R>): boolean
+```
+
 
 ---
 
 ## Tuples
+
+Monadness tuples are simply arrays with some extra methods.
+
+### Static Methods
+
+### Tuples.from
+
+```js
+Tuples.from <T1, ...Tn> (_1: T1, ..._n: Tn): TupleN <T1, ...Tn> & [T1, ...Tn]
+```
+
+
+### Instance Getters
+
+```js
+_1: T1;
+_n: Tn;
+```
+
+
+### Instance Methods
+
+In addition to all of the regular array methods, the Tuple class has the following methods.
+
+### map
+
+```js
+map <U1, ...Un> (f: (a: T1 | ...Tn) => U1 | ...Un): Tuple9<U1, ...Un>
+```
+
+### fmap
+
+```js
+fmap <U1, ...U9> (f: (a: T1 | ...Tn) => Tuple1<U1 | ...Un>): Tuple9<U1, ...Un>
+```
+
+### applies
+
+```js
+applies <U1, U2, ...Un, V1, ...Vn> (f: ApplicativeFunc<T1 | ...Tn, U1 | ...Un, V1 | ...Vn>): (mb: Tuple9<U1, ...Un>) => Tuple9<V1, ...Vn>
+```
+
+### mbind
+
+```js
+mbind <U1, ...Un> (f: TupleN<TMF<T1, U1>, ...TMF<Tn, Un>>): TupleN<U1, ...Un>
+```
+
+### toJSON
+
+```js
+toJSON (): { just: T | null }
+```
+
+### equals
+
+```js
+equals (other: TupleN<T>): boolean
+```
+
 
 **Example of Static Initializers and Usage:**
 
@@ -375,24 +562,6 @@ for (const val of tuple5) {
 }
 ```
 
-
-**TypeScript Declarations:**
-
-```js
-interface TupleN <T1, ...Tn> extends Tuple {
-    _1: T1;
-    _n: Tn;
-
-    map <U1, ...Un> (f: (a: T1 | ...Tn) => U1 | ...Un): Tuple9<U1, ...Un>;
-    fmap <U1, ...U9> (f: (a: T1 | ...Tn) => Tuple1<U1 | ...Un>): Tuple9<U1, ...Un>;
-    applies <U1, U2, ...Un, V1, ...Vn> (f: ApplicativeFunc<T1 | ...Tn, U1 | ...Un, V1 | ...Vn>): (mb: Tuple9<U1, ...Un>) => Tuple9<V1, ...Vn>;
-    mbind <U1, ...Un> (f: TupleN<TMF<T1, U1>, ...TMF<Tn, Un>>): Tuple9<U1, ...Un>;
-}
-
-class Tuples {
-    static from <T1, ...Tn> (_1: T1, ..._n: Tn): Tuplen <T1, ...Tn> & [T1, ...Tn];
-}
-```
 
 ---
 

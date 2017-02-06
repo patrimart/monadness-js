@@ -18,7 +18,7 @@ export abstract class Maybe <T> implements Monad<T> {
     abstract get (): T | never;
     abstract getOrElse (f: () => T): T;
     abstract getOrElseGet (value: T): T;
-    abstract getOrThrow (err: Error): T;
+    abstract getOrThrow (err?: Error): T | never;
     abstract orElse (o: () => Maybe<T>): Maybe<T>;
     abstract toObject (): {just: T | null};
 
@@ -123,7 +123,7 @@ export namespace Maybe {
      * @since 0.5.0
      */
     export function sequence <T> (...maybes: Array<Maybe<T>>): Maybe<T[]> {
-        
+
         const arr = [] as T[];
         for (const i in maybes) {
             if (maybes[i].isEmpty()) {
@@ -262,7 +262,7 @@ export namespace Maybe {
          * @param {Error} [err] - the optional Error to throw
          * @returns {T}
          */
-        public getOrThrow (err?: Error): T {
+        public getOrThrow (err?: Error): never {
             throw err || new ReferenceError("This option is None.")
         }
 
@@ -385,7 +385,7 @@ export namespace Maybe {
          * Returns the Just value.
          * @returns {T}
          */
-        public getOrThrow (err: Error) {
+        public getOrThrow (err?: Error): T {
             return this.value;
         }
 

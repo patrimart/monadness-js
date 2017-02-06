@@ -9,7 +9,7 @@ export declare abstract class Maybe<T> implements Monad<T> {
     abstract get(): T | never;
     abstract getOrElse(f: () => T): T;
     abstract getOrElseGet(value: T): T;
-    abstract getOrThrow(err: Error): T;
+    abstract getOrThrow(err?: Error): T | never;
     abstract orElse(o: () => Maybe<T>): Maybe<T>;
     abstract toObject(): {
         just: T | null;
@@ -42,7 +42,7 @@ export declare namespace Maybe {
         get(): never;
         getOrElse(f: () => T): T;
         getOrElseGet(value: T): T;
-        getOrThrow(err?: Error): T;
+        getOrThrow(err?: Error): never;
         orElse(f: () => Maybe<T>): Maybe<T>;
         toEither(): Either.Left<Error, T>;
         toObject(): {
@@ -61,7 +61,7 @@ export declare namespace Maybe {
         get(): T;
         getOrElse(value: () => T): T;
         getOrElseGet(value: T): T;
-        getOrThrow(err: Error): T;
+        getOrThrow(err?: Error): T;
         orElse(o: () => Maybe<T>): Maybe<T>;
         toEither(): Either.Right<Error, T>;
         toObject(): {

@@ -20,7 +20,7 @@ export abstract class Either <L, R> implements Monad<R> {
     abstract get (): R | never;
     abstract getOrElse (f: () => R): R;
     abstract getOrElseGet (right: R): R;
-    abstract getOrThrow (err?: Error): R;
+    abstract getOrThrow (err?: Error): R | never;
     abstract orElse (f: () => Either<L, R>): Either<L, R>;
     abstract toObject (): {left?: L; right?: R};
 
@@ -40,13 +40,13 @@ export abstract class Either <L, R> implements Monad<R> {
      * Returns an undefined Left value.
      * @returns {L}
      */
-    public getLeft (): L { throw new ReferenceError("This either is Right."); }
+    public getLeft (): L | never { throw new ReferenceError("This either is Right."); }
 
     /**
      * Returns an undefined Right value.
      * @returns {R}
      */
-    public getRight (): R { throw new ReferenceError("This either is Left."); }
+    public getRight (): R | never { throw new ReferenceError("This either is Left."); }
 
     /**
      * Returns an Maybe.None<R>.
@@ -122,7 +122,7 @@ export namespace Either {
      * Returns the singleton instance of Either.Left<void, void>.
      * @returns {Either.Left<void, void>}
      */
-    export function nothing () {
+    export function nothing (): Left<void, void> {
         return nothingEither;
     }
 
@@ -132,7 +132,7 @@ export namespace Either {
      * @since 0.5.0
      */
     export function sequence <L, R> (...eithers: Array<Either<L, R>>): Either<L, R[]> {
-        
+
         const arr = [] as R[];
         for (const i in eithers) {
             if (eithers[i].isLeft()) {
@@ -294,7 +294,7 @@ export namespace Either {
          * @param {Error} [err] - the optional Error to throw
          * @returns {R}
          */
-        public getOrThrow (err?: Error): R {
+        public getOrThrow (err?: Error): never {
             throw err || new ReferenceError("This either is Left.")
         }
 

@@ -32,7 +32,7 @@ describe("Tuples", function () {
                 vals.push(tuple[i]);
             assert.deepEqual(vals, [123, "abc"]);
         });
-        it('should deconstruct', function () {
+        it("should deconstruct", function () {
             var a = tuple[0], b = tuple[1];
             assert(a === tuple._1 && b === tuple._2);
         });
@@ -60,28 +60,28 @@ describe("Tuples", function () {
             assert.equal(tuple._2, 2);
             assert.equal(tuple._3, 3);
         });
-        it('should map', function () {
+        it("should map", function () {
             var tuple = _10.Tuples.from(1, 2, 3);
             var tt = tuple.map(function (a) { return a * a; });
             assert(tt._1 === 1);
             assert(tt._2 === 4);
             assert(tt._3 === 9);
         });
-        it('should fmap', function () {
+        it("should fmap", function () {
             var tuple = _10.Tuples.from(1, 2, 3);
             var tt = tuple.fmap(function (a) { return _10.Tuples.from(a * a); });
             assert(tt._1 === 1);
             assert(tt._2 === 4);
             assert(tt._3 === 9);
         });
-        it('should applies', function () {
+        it("should applies", function () {
             var tuple = _10.Tuples.from(1, 2, 3);
             var tt = tuple.applies(function (a) { return function (b) { return _10.Tuples.from(a + b); }; })(_10.Tuples.from(4, 5, 6));
             assert(tt._1 === 5);
             assert(tt._2 === 7);
             assert(tt._3 === 9);
         });
-        it('should mbind', function () {
+        it("should mbind", function () {
             var tuple = _10.Tuples.from(1, 2, 3);
             var tt = tuple.mbind(_10.Tuples.from(function (a) { return _10.Tuples.from(a + 4); }, function (a) { return _10.Tuples.from(a + 5); }, function (a) { return _10.Tuples.from(a + 6); }));
             assert(tt._1 === 5);

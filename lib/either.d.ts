@@ -12,7 +12,7 @@ export declare abstract class Either<L, R> implements Monad<R> {
     abstract get(): R | never;
     abstract getOrElse(f: () => R): R;
     abstract getOrElseGet(right: R): R;
-    abstract getOrThrow(err?: Error): R;
+    abstract getOrThrow(err?: Error): R | never;
     abstract orElse(f: () => Either<L, R>): Either<L, R>;
     abstract toObject(): {
         left?: L;
@@ -20,8 +20,8 @@ export declare abstract class Either<L, R> implements Monad<R> {
     };
     isLeft(): boolean;
     isRight(): boolean;
-    getLeft(): L;
-    getRight(): R;
+    getLeft(): L | never;
+    getRight(): R | never;
     toMaybe(): Maybe<R>;
     toOption(): Option<R>;
     equals(other: Either<L, R>): boolean;
@@ -53,7 +53,7 @@ export declare namespace Either {
         getLeft(): L;
         getOrElse(f: () => R): R;
         getOrElseGet(right: R): R;
-        getOrThrow(err?: Error): R;
+        getOrThrow(err?: Error): never;
         orElse(f: () => Either<L, R>): Either<L, R>;
         toObject(): {
             left?: L;
