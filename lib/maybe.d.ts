@@ -27,7 +27,7 @@ export declare namespace Maybe {
     function just<T>(value: T): Just<T>;
     function none<T>(): None<T>;
     function nothing(): None<void>;
-    function fromNull<T>(value: T): Maybe<T>;
+    function fromNull<T>(value: T | undefined | null): Maybe<T>;
     function sequence<T>(...maybes: Array<Maybe<T>>): Maybe<T[]>;
     function traverse<T, U>(f: (a: T) => Maybe<U>): (as: T[]) => Maybe<U[]>;
     function lift<T>(partialFunction: (...args: any[]) => T): (...args: any[]) => Maybe<T>;

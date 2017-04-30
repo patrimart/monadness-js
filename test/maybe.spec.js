@@ -31,6 +31,11 @@ describe("Maybe", function () {
             var m = lib_1.Maybe.sequence(lib_1.Maybe.just(1), lib_1.Maybe.just(2), lib_1.Maybe.just(3));
             assert.deepEqual(m.get(), [1, 2, 3]);
         });
+        it("is valid for union types with undefined or null", function () {
+            (function (val) {
+                return lib_1.Maybe.fromNull(val);
+            });
+        });
         it("should traverse", function () {
             var m = lib_1.Maybe.traverse(function (a) { return lib_1.Maybe.just(a * a); })([1, 2, 3, 4]);
             assert.deepEqual(m.get(), [1, 4, 9, 16]);
