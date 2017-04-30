@@ -42,6 +42,13 @@ describe("Maybe", function () {
             assert.deepEqual(m.get(), [1, 2, 3]);
         });
 
+        it ("is valid for union types with undefined or null", function() {
+            // Won't compile if the test isn't truthy
+            (val: string | undefined | null): Maybe<string> => {
+                return Maybe.fromNull(val)
+            }
+        })
+
         it ("should traverse", function () {
 
             let m = Maybe.traverse((a: number) => Maybe.just(a * a))([1, 2, 3, 4]);
