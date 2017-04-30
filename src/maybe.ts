@@ -109,7 +109,7 @@ export namespace Maybe {
      * Returns a Maybe.Just<T> instance, or Maybe.None<T> for null and undefined.
      * @returns {Maybe<T>}
      */
-    export function fromNull <T> (value: T): Maybe<T> {
+    export function fromNull <T> (value: T | undefined | null): Maybe<T> {
         if (value === null || value === undefined) {
             return Maybe.none<T>();
         } else {
@@ -217,7 +217,7 @@ export namespace Maybe {
         }
 
         /**
-         * 
+         *
          * @since 0.5.0
          */
         public flatten (): None<T> {
