@@ -43,10 +43,9 @@ describe("Maybe", function () {
         });
 
         it ("is valid for union types with undefined or null", function() {
-            // Won't compile if the test isn't truthy
-            (val: string | undefined | null): Maybe<string> => {
-                return Maybe.fromNull(val)
-            }
+            assert(Maybe.fromNull([1, 2, 3].find(i => i > 4)).isEmpty());
+            assert(Maybe.fromNull(null).isEmpty());
+            assert(Maybe.fromNull(1).isDefined());
         })
 
         it ("should traverse", function () {
