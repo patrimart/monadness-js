@@ -168,7 +168,7 @@ Maybe.nothing (): Maybe<void>
 Creates a Maybe.Just with the given value or, if the value is `null` or `undefined`, a Maybe.None.
 
 ```js
-Maybe.fromNull <T> (value: T): Maybe<T>
+Maybe.fromNull <T> (value: T | undefined | null): Maybe<T>
 ```
 
 ### Maybe.sequence
